@@ -1,0 +1,56 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+**/node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+/dist/
+/.wrangler/
+/outputs/
+/work/
+
+# legacy static preview artifacts (not part of the production app)
+/package-stage/
+/hosted-assets/
+/examples/
+/hosted-app.html
+/index.html
+/build-hosted-preview.ps1
+/*.tar.gz
+/tsconfig.tsbuildinfo
+/public/prototype/*.js
+/public/prototype/*.css
+/public/prototype/index.html

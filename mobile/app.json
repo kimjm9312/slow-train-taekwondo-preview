@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "슬로우 트레인 태권도",
+    "slug": "slow-train-taekwondo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "slowtrain",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "kr.co.slowtrain.taekwondo"
+    },
+    "android": {
+      "package": "kr.co.slowtrain.taekwondo",
+      "adaptiveIcon": { "backgroundColor": "#D8752D" }
+    },
+    "plugins": ["expo-secure-store"]
+  }
+}

@@ -1,0 +1,11 @@
+import { useState } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { api, json } from "../api/client";
+import { colors, styles } from "../theme";
+import type { Child, User } from "../types";
+
+export function FixedScheduleScreen({ user, child }: { user: User; child?: Child }) {
+  const [plan,setPlan]=useState<2|3>(3), [times,setTimes]=useState<Record<string,string>>({월:"17:00",수:"17:00",금:"17:00"}); const days=plan===3?["월","수","금"]:["화","목"], slots=["14:00","15:00","16:00","17:00","18:00","19:00"];
+  async function submit(){if(!child)return; const payload={childId:child.id,times:Object.fromEntries(days.map(day=>[day,times[day]||"17:00"]))}; try{await api(user.role==="admin"?"/api/v1/fixed-schedules":"/api/v1/fixed-schedule-requests",json(user.role==="admin"?"PUT":"POST",payload));Alert.alert("고정 수업",user.role==="admin"?"변경했습니다.":"관리자 승인을 요청했습니다.");}catch(error){Alert.alert("고정 수업",error instanceof Error?error.message:"신청하지 못했습니다.");}}
+  return <ScrollView style={styles.screen} contentContainerStyle={styles.content}><Text style={styles.eyebrow}>FIXED SCHEDULE</Text><Text style={styles.title}>고정 수업 변경</Text><View style={[styles.row,{marginVertical:18}]}>{([2,3] as const).map(value=><TouchableOpacity key={value} onPress={()=>{setPlan(value);setTimes(value===3?{월:"17:00",수:"17:00",금:"17:00"}:{화:"17:00",목:"17:00"});}} style={[styles.button,{flex:1,backgroundColor:plan===value?colors.ink:"white"}]}><Text style={{fontWeight:"800",color:plan===value?"white":colors.ink}}>주 {value}회</Text></TouchableOpacity>)}</View>{days.map(day=><View style={styles.card} key={day}><Text style={{fontWeight:"800",marginBottom:10}}>{day}요일</Text><View style={{flexDirection:"row",flexWrap:"wrap",gap:7}}>{slots.map(slot=><TouchableOpacity key={slot} onPress={()=>setTimes({...times,[day]:slot})} style={{padding:9,borderRadius:9,backgroundColor:times[day]===slot?colors.orange:"#eee8df"}}><Text style={{color:times[day]===slot?"white":colors.ink}}>{slot}</Text></TouchableOpacity>)}</View></View>)}<TouchableOpacity style={styles.button} onPress={submit}><Text style={styles.buttonText}>{user.role==="admin"?"바로 변경":"관리자에게 변경 신청"}</Text></TouchableOpacity></ScrollView>;
+}
