@@ -1,0 +1,9 @@
+import { audit } from "../../../../../server/audit";
+import { requireAdmin } from "../../../../../server/auth";
+import { many, run } from "../../../../../server/database";
+import { handleApiError, jsonBody, ok, requiredText } from "../../../../../server/http";
+import { newId } from "../../../../../server/ids";
+
+export async function GET(request: Request) { try { await requireAdmin(request); return ok({ restrictions: await many("SELECT r.id,r.child_id AS childId,c.name AS childName,r.session_id AS sessionId,r.reason,r.active,r.created_at AS createdAt FROM restrictions r JOIN children c ON c.id=r.child_id ORDER BY r.created_at DESC") }); } catch (error) { return handleApiError(error); } }
+export async function POST(request: Request) { try { const actor = await requireAdmin(request), body = await jsonBody<{ childId?: string; sessionId?: string | null; reason?: string }>(request), id = newId("restriction"), childId = requiredText(body.childId, "회원"), reason = requiredText(body.reason, "제한 사유"); await run("INSERT INTO restrictions(id,child_id,session_id,reason,created_by) VALUES(?,?,?,?,?)", id, childId, body.sessionId ?? null, reason, actor.id); await audit(request, actor, "create", "restriction", id, null, { childId, sessionId: body.sessionId ?? null, reason }); return ok({ restriction: { id, childId, sessionId: body.sessionId ?? null, reason, active: true } }, { status: 201 }); } catch (error) { return handleApiError(error); } }
+export async function DELETE(request: Request) { try { const actor = await requireAdmin(request), id = requiredText(new URL(request.url).searchParams.get("id"), "제한"); await run("UPDATE restrictions SET active=0,updated_at=CURRENT_TIMESTAMP WHERE id=?", id); await audit(request, actor, "delete", "restriction", id, null, { active: false }); return ok({ success: true }); } catch (error) { return handleApiError(error); } }
